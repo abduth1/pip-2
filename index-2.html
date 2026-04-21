@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PI Project Form — Makkah Health Cluster</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f0;min-height:100vh;padding:1.5rem 1rem;}
+.app{max-width:700px;margin:0 auto;background:white;border-radius:12px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #eee;}
+.logo{width:36px;height:36px;background:#1a3a5c;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.logo svg{width:20px;height:20px;fill:white;}
+.header h1{font-size:15px;font-weight:600;color:#1a1a1a;}
+.header p{font-size:12px;color:#666;}
+.steps{display:flex;margin-bottom:1.5rem;}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:1px;background:#e5e5e5;z-index:0;}
+.dot{width:28px;height:28px;border-radius:50%;border:1px solid #ddd;background:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#999;z-index:1;position:relative;}
+.dot.active{background:#1a3a5c;color:white;border-color:#1a3a5c;}
+.dot.done{background:#e1f5ee;color:#0f6e56;border-color:#0f6e56;}
+.slabel{font-size:10px;color:#999;margin-top:4px;text-align:center;}
+.slabel.active{color:#1a1a1a;font-weight:500;}
+.section{display:none;}
+.section.active{display:block;}
+.card{background:white;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
+.ctitle{font-size:11px;font-weight:600;color:#666;margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.05em;}
+.field{margin-bottom:10px;}
+.field label{display:block;font-size:13px;color:#555;margin-bottom:3px;}
+.field input,.field select,.field textarea{width:100%;font-size:13px;border:1px solid #ddd;border-radius:6px;padding:7px 10px;color:#1a1a1a;background:white;outline:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1a3a5c;}
+.field textarea{min-height:70px;resize:vertical;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.cb-group{display:flex;flex-wrap:wrap;gap:8px;}
+.cb-item{display:flex;align-items:center;gap:5px;font-size:13px;color:#1a1a1a;}
+.cb-item input{width:auto;}
+.req{color:#c0392b;}
+.ai-box{background:#f8f9fa;border:1px solid #e5e5e5;border-radius:8px;padding:10px;margin-bottom:10px;}
+.ai-badge{font-size:10px;font-weight:600;background:#1a3a5c;color:white;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px;}
+.ai-tip{font-size:12px;color:#666;line-height:1.5;}
+.ai-resp{font-size:12px;color:#1a1a1a;line-height:1.5;margin-top:4px;}
+.btn-ai{font-size:12px;margin-top:6px;padding:4px 12px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;color:#1a1a1a;}
+.btn-ai:hover{background:#f5f5f5;}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;}
+.btn-back{font-size:13px;color:#666;background:none;border:none;cursor:pointer;padding:8px 0;}
+.btn-next{background:#1a3a5c;color:white;border:none;border-radius:8px;padding:9px 22px;font-size:13px;cursor:pointer;font-weight:500;}
+.btn-next:hover{background:#15304f;}
+.team-tbl{width:100%;border-collapse:collapse;}
+.team-tbl th{font-size:11px;color:#666;font-weight:500;padding:5px 6px;border-bottom:1px solid #eee;text-align:left;}
+.team-tbl td{padding:3px;}
+.team-tbl input{font-size:12px;border:1px solid #ddd;border-radius:4px;padding:4px 6px;width:100%;background:white;color:#1a1a1a;}
+.btn-add{font-size:12px;color:#666;background:none;border:1px dashed #ccc;border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:6px;width:100%;}
+.gantt-wrap{overflow-x:auto;margin-top:8px;}
+.pdsa-tabs{display:flex;gap:6px;margin-bottom:1rem;}
+.pdsa-tab{font-size:12px;padding:4px 12px;border-radius:20px;border:1px solid #ddd;cursor:pointer;color:#666;background:white;}
+.pdsa-tab.active{background:#1a3a5c;color:white;border-color:#1a3a5c;}
+.pdsa-wheel-row{display:flex;gap:1rem;align-items:flex-start;}
+.phase-form{display:none;}
+.phase-form.active{display:block;}
+.phase-title{font-size:13px;font-weight:600;margin-bottom:8px;}
+.phase-nav{display:flex;gap:6px;margin-top:8px;}
+.phase-nav button{font-size:12px;padding:5px 12px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;color:#1a1a1a;}
+.phase-nav button:hover{background:#f5f5f5;}
+.criteria-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;}
+.criteria-lbl{font-size:12px;font-weight:500;min-width:150px;color:#1a1a1a;padding-top:2px;}
+.pdf-preview{background:#e8e8e2;padding:1.5rem;border-radius:12px;}
+.pdf-page{background:white;width:100%;max-width:620px;margin:0 auto 1.5rem;padding:2rem;border:1px solid #ddd;font-family:Arial,sans-serif;font-size:11px;color:#222;}
+.pdf-page:last-child{margin-bottom:0;}
+.pdf-hdr{background:#1a3a5c;color:white;padding:12px 16px;margin:-2rem -2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.pdf-hdr h1{font-size:13px;font-weight:700;margin:0;}
+.pdf-hdr p{font-size:10px;opacity:0.8;margin:0;}
+.pdf-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#1a3a5c;border-bottom:2px solid #1a3a5c;padding-bottom:3px;margin:16px 0 8px;}
+.pdf-row{display:flex;gap:12px;margin-bottom:6px;}
+.pdf-field{flex:1;}
+.pdf-field-lbl{font-size:9px;color:#666;margin-bottom:2px;text-transform:uppercase;letter-spacing:0.05em;}
+.pdf-field-val{font-size:11px;color:#222;min-height:16px;border-bottom:1px solid #eee;padding-bottom:3px;}
+.pdf-tbl{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:10px;}
+.pdf-tbl th{background:#1a3a5c;color:white;padding:5px 6px;text-align:left;font-weight:600;}
+.pdf-tbl td{padding:4px 6px;border-bottom:1px solid #eee;}
+.pdf-tbl tr:nth-child(even) td{background:#f8f8f8;}
+.pdf-phase-box{border:1px solid #ddd;border-radius:4px;margin-bottom:8px;overflow:hidden;}
+.pdf-phase-hdr{padding:5px 10px;font-size:10px;font-weight:700;color:white;}
+.pdf-phase-body{padding:8px 10px;}
+.pdf-phase-item{margin-bottom:6px;}
+.pdf-phase-item-lbl{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:0.04em;}
+.pdf-phase-item-val{font-size:10px;color:#222;margin-top:2px;line-height:1.4;}
+.pdf-footer{border-top:1px solid #eee;padding-top:8px;margin-top:16px;display:flex;justify-content:space-between;font-size:9px;color:#999;}
+.highlight-box{font-size:11px;color:#222;line-height:1.6;padding:8px;background:#f8f8f8;border-radius:4px;}
+.highlight-box.accent{border-left:3px solid #1a3a5c;}
+
+/* ── PDF download button ── */
+.export-actions{display:flex;gap:10px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;}
+.btn-download-pdf{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#1a3a5c;color:white;
+  border:none;border-radius:8px;
+  padding:10px 20px;font-size:13px;font-weight:600;
+  cursor:pointer;letter-spacing:0.02em;
+  box-shadow:0 2px 6px rgba(26,58,92,0.25);
+  transition:background 0.15s,box-shadow 0.15s,transform 0.1s;
+}
+.btn-download-pdf:hover{background:#15304f;box-shadow:0 3px 10px rgba(26,58,92,0.35);transform:translateY(-1px);}
+.btn-download-pdf:active{transform:translateY(0);box-shadow:0 1px 4px rgba(26,58,92,0.2);}
+.btn-download-pdf svg{width:15px;height:15px;fill:none;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.export-hint{font-size:11px;color:#888;line-height:1.4;}
+
+/* ── Print stylesheet ── */
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  body{background:white!important;padding:0!important;margin:0!important;}
+
+  /* Hide everything except the PDF preview */
+  .app > .header,
+  .app > .steps,
+  .section:not(#s6),
+  #s6 .export-actions,
+  #s6 > .nav{display:none!important;}
+
+  .app{max-width:100%!important;padding:0!important;box-shadow:none!important;border-radius:0!important;background:white!important;}
+  .pdf-preview{background:white!important;padding:0!important;border-radius:0!important;}
+
+  /* Each .pdf-page = one printed page */
+  .pdf-page{
+    page-break-after:always;
+    break-after:page;
+    margin:0!important;
+    border:none!important;
+    padding:20mm 18mm!important;
+    max-width:100%!important;
+    width:100%!important;
+    box-shadow:none!important;
+  }
+  .pdf-page:last-child{page-break-after:avoid;break-after:avoid;}
+
+  /* Make sure colored headers and table backgrounds print */
+  .pdf-hdr{background:#1a3a5c!important;color:white!important;-webkit-print-color-adjust:exact!important;}
+  .pdf-tbl th{background:#1a3a5c!important;color:white!important;}
+  .pdf-tbl tr:nth-child(even) td{background:#f8f8f8!important;}
+  .pdf-phase-hdr{color:white!important;}
+
+  @page{margin:0;size:A4;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+    <div><h1>Performance Improvement Project</h1><p>Makkah Health Cluster — تجمع مكة المكرمة الصحي</p></div>
+  </div>
+
+  <div class="steps">
+    <div class="step"><div class="dot active" id="d1">1</div><div class="slabel active" id="l1">Info</div></div>
+    <div class="step"><div class="dot" id="d2">2</div><div class="slabel" id="l2">Charter</div></div>
+    <div class="step"><div class="dot" id="d3">3</div><div class="slabel" id="l3">Criteria</div></div>
+    <div class="step"><div class="dot" id="d4">4</div><div class="slabel" id="l4">Milestones</div></div>
+    <div class="step"><div class="dot" id="d5">5</div><div class="slabel" id="l5">PDSA</div></div>
+    <div class="step"><div class="dot" id="d6">6</div><div class="slabel" id="l6">Export</div></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="section active" id="s1">
+    <div class="card">
+      <div class="ctitle">Basic information</div>
+      <div class="two-col">
+        <div class="field"><label>Hospital <span class="req">*</span></label>
+          <select id="hospital"><option value="">Select...</option><option>Al-Noor Specialist Hospital</option><option>Hera General Hospital</option><option>King Abdullah Medical City</option><option>Ajyad Emergency Hospital</option><option>Al-Zahir Hospital</option><option>Other</option></select>
+        </div>
+        <div class="field"><label>Project name <span class="req">*</span></label><input type="text" id="pname" placeholder="Project name"/></div>
+      </div>
+      <div class="field"><label>Department / committee</label><input type="text" id="dept" placeholder="e.g. Emergency, Quality"/></div>
+      <div class="two-col">
+        <div class="field"><label>Scope</label>
+          <div class="cb-group">
+            <label class="cb-item"><input type="radio" name="scope" value="Multidisciplinary"/> Multidisciplinary</label>
+            <label class="cb-item"><input type="radio" name="scope" value="Departmental"/> Departmental</label>
+          </div>
+        </div>
+        <div class="field"><label>Period</label>
+          <div class="cb-group">
+            <label class="cb-item"><input type="radio" name="period" value="3 months"/> 3 months</label>
+            <label class="cb-item"><input type="radio" name="period" value="6 months"/> 6 months</label>
+            <label class="cb-item"><input type="radio" name="period" value="1 year"/> 1 year</label>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>Improvement area(s)</label>
+        <div class="cb-group">
+          <label class="cb-item"><input type="checkbox" name="area" value="Clinical Process"/> Clinical process</label>
+          <label class="cb-item"><input type="checkbox" name="area" value="Administrative Process"/> Administrative process</label>
+          <label class="cb-item"><input type="checkbox" name="area" value="Both"/> Both</label>
+        </div>
+      </div>
+      <div class="field"><label>Improvement domain(s)</label>
+        <div class="cb-group">
+          <label class="cb-item"><input type="checkbox" name="domain" value="Patient Safety"/> Patient safety</label>
+          <label class="cb-item"><input type="checkbox" name="domain" value="Process Efficiency"/> Process efficiency</label>
+          <label class="cb-item"><input type="checkbox" name="domain" value="Patient Experience"/> Patient experience</label>
+          <label class="cb-item"><input type="checkbox" name="domain" value="Continuity of Care"/> Continuity of care</label>
+          <label class="cb-item"><input type="checkbox" name="domain" value="Environmental Safety"/> Environmental safety</label>
+        </div>
+      </div>
+      <div class="field"><label>Linked KPI(s) <span class="req">*</span></label><input type="text" id="kpis" placeholder="e.g. Door-to-balloon time, HSMR"/></div>
+      <div class="two-col">
+        <div class="field"><label>Start date</label><input type="date" id="sdate"/></div>
+        <div class="field"><label>End date</label><input type="date" id="edate"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">SMART objective</div>
+      <div class="ai-box">
+        <span class="ai-badge">AI coach</span>
+        <div class="ai-tip">Write a Specific, Measurable, Achievable, Relevant, Time-bound objective. No reasons or solutions — just the goal.</div>
+        <div id="smart-r"></div>
+        <button class="btn-ai" onclick="aiHelp('smart')">Help me write this ↗</button>
+      </div>
+      <div class="field"><textarea id="smart" placeholder="e.g. Reduce door-to-balloon time from 95 to under 60 min within 6 months..."></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Project team</div>
+      <table class="team-tbl"><thead><tr><th>Name</th><th>Role</th><th>Department</th></tr></thead>
+        <tbody id="team-body">
+          <tr><td><input type="text" placeholder="Name"/></td><td><input type="text" placeholder="Role"/></td><td><input type="text" placeholder="Dept"/></td></tr>
+          <tr><td><input type="text" placeholder="Name"/></td><td><input type="text" placeholder="Role"/></td><td><input type="text" placeholder="Dept"/></td></tr>
+        </tbody>
+      </table>
+      <button class="btn-add" onclick="addTeamRow()">+ add member</button>
+    </div>
+    <div class="nav"><span></span><button class="btn-next" onclick="goTo(2)">Next →</button></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="section" id="s2">
+    <div class="card">
+      <div class="ctitle">Problem statement</div>
+      <div class="ai-box">
+        <span class="ai-badge">AI coach</span>
+        <div class="ai-tip">Describe the existing condition in 2–3 sentences. What is happening, where, and what is the impact?</div>
+        <div id="prob-r"></div>
+        <button class="btn-ai" onclick="aiHelp('prob')">Help me write this ↗</button>
+      </div>
+      <div class="field"><textarea id="prob" placeholder="Describe the current problem..."></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Project description</div>
+      <div class="field"><textarea id="pdesc" placeholder="What activities will this project involve?"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Rationale & situational analysis</div>
+      <div class="field"><textarea id="rationale" placeholder="Why does this need improvement? Include baseline data if available..."></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Expected outcomes & benefits</div>
+      <div class="field"><textarea id="outcomes" placeholder="How will this benefit staff, patients, and the organization?"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">QI methods & tools</div>
+      <div class="cb-group" style="margin-bottom:10px">
+        <label class="cb-item"><input type="checkbox" name="method" value="RCA"/> Root cause analysis</label>
+        <label class="cb-item"><input type="checkbox" name="method" value="PDSA"/> PDSA cycles</label>
+        <label class="cb-item"><input type="checkbox" name="method" value="Flowchart"/> Flowchart</label>
+        <label class="cb-item"><input type="checkbox" name="method" value="FMEA"/> FMEA</label>
+        <label class="cb-item"><input type="checkbox" name="method" value="Surveys"/> Surveys</label>
+        <label class="cb-item"><input type="checkbox" name="method" value="Checklists"/> Checklists</label>
+      </div>
+      <div class="field"><label>Challenges & mitigation</label><textarea id="challenges" placeholder="What obstacles and how will you address them?"></textarea></div>
+    </div>
+    <div class="nav"><button class="btn-back" onclick="goTo(1)">← Back</button><button class="btn-next" onclick="goTo(3)">Next →</button></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="section" id="s3">
+    <div class="card">
+      <div class="ctitle">Core criteria</div>
+      <div class="cb-group">
+        <label class="cb-item"><input type="checkbox" name="core" value="High Risk"/> High risk</label>
+        <label class="cb-item"><input type="checkbox" name="core" value="High Volume"/> High volume</label>
+        <label class="cb-item"><input type="checkbox" name="core" value="Problem Prone"/> Problem prone</label>
+        <label class="cb-item"><input type="checkbox" name="core" value="Patient Experience"/> Patient experience</label>
+        <label class="cb-item"><input type="checkbox" name="core" value="Time"/> Time applicability</label>
+        <label class="cb-item"><input type="checkbox" name="core" value="Resources"/> Resources applicability</label>
+        <label class="cb-item"><input type="checkbox" name="core" value="Cost"/> Cost applicability</label>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Alignment criteria</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="criteria-row"><span class="criteria-lbl">Strategic alignment</span><div class="cb-group"><label class="cb-item"><input type="checkbox" name="strat" value="MHC Goals"/> MHC strategic goals</label><label class="cb-item"><input type="checkbox" name="strat" value="Benchmarking"/> National benchmarking</label></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Innovation</span><div class="cb-group"><label class="cb-item"><input type="checkbox" name="innov" value="Novel"/> Novel solution</label><label class="cb-item"><input type="checkbox" name="innov" value="Technology"/> AI/digital transformation</label></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Evidence-based</span><div class="cb-group"><label class="cb-item"><input type="checkbox" name="evid" value="Guidelines"/> Clinical guidelines</label><label class="cb-item"><input type="checkbox" name="evid" value="Research"/> Research potential</label></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Impact & scalability</span><div class="cb-group"><label class="cb-item"><input type="checkbox" name="impact" value="Measurable"/> Measurable improvement</label><label class="cb-item"><input type="checkbox" name="impact" value="Cost"/> Cost effectiveness</label><label class="cb-item"><input type="checkbox" name="impact" value="Scalable"/> Scalable</label></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Sustainability</span><div class="cb-group"><label class="cb-item"><input type="checkbox" name="sust" value="Plan"/> Sustainability plan</label><label class="cb-item"><input type="checkbox" name="sust" value="Policy"/> Policy integration</label><label class="cb-item"><input type="checkbox" name="sust" value="Owners"/> Assigned owners</label></div></div>
+        <div class="criteria-row"><span class="criteria-lbl">Collaboration</span><div class="cb-group"><label class="cb-item"><input type="checkbox" name="collab" value="Cross"/> Cross-departmental</label><label class="cb-item"><input type="checkbox" name="collab" value="Leadership"/> Leadership sponsorship</label><label class="cb-item"><input type="checkbox" name="collab" value="Patients"/> Patient participation</label></div></div>
+      </div>
+    </div>
+    <div class="nav"><button class="btn-back" onclick="goTo(2)">← Back</button><button class="btn-next" onclick="goTo(4)">Next →</button></div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="section" id="s4">
+    <div class="card">
+      <div class="ctitle">Milestone dates</div>
+      <table class="team-tbl">
+        <thead><tr><th>Phase</th><th>Task</th><th>Start</th><th>End</th><th>Responsible</th></tr></thead>
+        <tbody id="ms-body">
+          <tr><td style="font-size:11px;color:#666">Planning</td><td style="font-size:12px">Project initiation</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Planning</td><td style="font-size:12px">Root cause analysis</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Planning</td><td style="font-size:12px">Intervention plan</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Execution</td><td style="font-size:12px">First PDSA cycle</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Monitoring</td><td style="font-size:12px">Mid-project review</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Monitoring</td><td style="font-size:12px">Final PDSA cycle</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Monitoring</td><td style="font-size:12px">Outcome data collection</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Closing</td><td style="font-size:12px">Close-out report</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+          <tr><td style="font-size:11px;color:#666">Sustainability</td><td style="font-size:12px">Sustainability plan</td><td><input type="date" class="ms"/></td><td><input type="date" class="me"/></td><td><input type="text" placeholder="Name"/></td></tr>
+        </tbody>
+      </table>
+      <button class="btn-next" style="margin-top:10px;font-size:12px;padding:6px 14px;background:#0f6e56;" onclick="buildGantt()">Generate Gantt chart</button>
+    </div>
+    <div class="card" id="gantt-card" style="display:none">
+      <div class="ctitle">Gantt chart</div>
+      <div class="gantt-wrap"><svg id="gantt-svg"></svg></div>
+    </div>
+    <div class="nav"><button class="btn-back" onclick="goTo(3)">← Back</button><button class="btn-next" onclick="goTo(5)">Next →</button></div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="section" id="s5">
+    <div class="card">
+      <div class="ctitle">PDSA cycles</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="pdsa-tabs" id="pdsa-tabs"></div>
+        <button style="font-size:12px;padding:4px 12px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;" onclick="addPDSACycle()">+ New cycle</button>
+      </div>
+      <div class="pdsa-wheel-row">
+        <div style="flex-shrink:0">
+          <svg id="pdsa-wheel" width="180" height="180" viewBox="0 0 200 200" style="cursor:pointer">
+            <g onclick="selPhase('plan')" style="cursor:pointer"><path d="M100,100 L100,10 A90,90 0 0,1 190,100 Z" fill="#185FA5"/><text x="155" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="white">Plan</text></g>
+            <g onclick="selPhase('do')" style="cursor:pointer"><path d="M100,100 L190,100 A90,90 0 0,1 100,190 Z" fill="#0F6E56"/><text x="155" y="155" text-anchor="middle" font-size="12" font-weight="600" fill="white">Do</text></g>
+            <g onclick="selPhase('study')" style="cursor:pointer"><path d="M100,100 L100,190 A90,90 0 0,1 10,100 Z" fill="#854F0B"/><text x="45" y="155" text-anchor="middle" font-size="12" font-weight="600" fill="white">Study</text></g>
+            <g onclick="selPhase('act')" style="cursor:pointer"><path d="M100,100 L10,100 A90,90 0 0,1 100,10 Z" fill="#534AB7"/><text x="45" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="white">Act</text></g>
+            <circle cx="100" cy="100" r="30" fill="white" stroke="#ddd" stroke-width="1"/>
+            <text id="pw-num" x="100" y="106" text-anchor="middle" font-size="16" font-weight="600" fill="#1a3a5c">1</text>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="phase-form active" id="pf-plan">
+            <div class="phase-title" style="color:#185FA5">Plan</div>
+            <div class="ai-box"><span class="ai-badge">AI coach</span><div class="ai-tip">What change will you test? What do you predict?</div><div id="plan-ar"></div><button class="btn-ai" onclick="pdsaAI('plan')">Help me plan ↗</button></div>
+            <div class="field"><label>What are you testing?</label><textarea id="plan-test" placeholder="Describe the change or intervention..."></textarea></div>
+            <div class="field"><label>Prediction</label><textarea id="plan-pred" placeholder="What do you expect to happen?"></textarea></div>
+            <div class="field"><label>Measure of success</label><input type="text" id="plan-meas" placeholder="How will you track improvement?"/></div>
+            <div class="phase-nav"><button onclick="selPhase('do')">Next: Do →</button></div>
+          </div>
+          <div class="phase-form" id="pf-do">
+            <div class="phase-title" style="color:#0F6E56">Do</div>
+            <div class="field"><label>What was done?</label><textarea id="do-done" placeholder="Describe implementation..."></textarea></div>
+            <div class="field"><label>Data collected</label><textarea id="do-data" placeholder="Observations and data..."></textarea></div>
+            <div class="field"><label>Unexpected events</label><textarea id="do-issues" placeholder="Any deviations or problems?"></textarea></div>
+            <div class="phase-nav"><button onclick="selPhase('plan')">← Plan</button><button onclick="selPhase('study')">Next: Study →</button></div>
+          </div>
+          <div class="phase-form" id="pf-study">
+            <div class="phase-title" style="color:#854F0B">Study</div>
+            <div class="ai-box"><span class="ai-badge">AI coach</span><div class="ai-tip">Compare results to predictions. What did the data tell you?</div><div id="study-ar"></div><button class="btn-ai" onclick="pdsaAI('study')">Help me analyze ↗</button></div>
+            <div class="field"><label>Results vs prediction</label><textarea id="study-cmp" placeholder="Did results match expectations?"></textarea></div>
+            <div class="field"><label>What did you learn?</label><textarea id="study-learn" placeholder="Key insights..."></textarea></div>
+            <div class="field"><label>Outcome</label>
+              <select id="study-out"><option value="">Select...</option><option value="success">Improvement achieved — adopt</option><option value="partial">Partial improvement — adapt</option><option value="fail">No improvement — abandon</option></select>
+            </div>
+            <div class="phase-nav"><button onclick="selPhase('do')">← Do</button><button onclick="selPhase('act')">Next: Act →</button></div>
+          </div>
+          <div class="phase-form" id="pf-act">
+            <div class="phase-title" style="color:#534AB7">Act</div>
+            <div class="field"><label>Decision</label>
+              <select id="act-dec" onchange="checkAdapt()"><option value="">Select...</option><option value="adopt">Adopt — implement permanently</option><option value="adapt">Adapt — run another cycle</option><option value="abandon">Abandon — try different approach</option></select>
+            </div>
+            <div class="field"><label>Next steps</label><textarea id="act-next" placeholder="What changes going forward?"></textarea></div>
+            <div id="new-cycle-btn" style="display:none"><button style="font-size:13px;padding:6px 14px;border:1px solid #ddd;border-radius:6px;background:white;cursor:pointer;" onclick="addPDSACycle()">+ Start next cycle →</button></div>
+            <div class="phase-nav"><button onclick="selPhase('study')">← Study</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav"><button class="btn-back" onclick="goTo(4)">← Back</button><button class="btn-next" onclick="buildPDF();goTo(6)">Generate PDF →</button></div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="section" id="s6">
+    <div class="export-actions">
+      <button class="btn-download-pdf" onclick="window.print()">
+        <svg viewBox="0 0 24 24"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+        Download PDF
+      </button>
+      <span class="export-hint">Opens your browser's print dialog.<br/>Choose "Save as PDF" as the destination.</span>
+    </div>
+    <div class="pdf-preview" id="pdf-preview"></div>
+    <div class="nav"><button class="btn-back" onclick="goTo(5)">← Back</button></div>
+  </div>
+</div>
+
+<script>
+let cur=1,pdsaCur=1,pdsaTotal=1,curPhase='plan';
+
+function goTo(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  document.getElementById('d'+cur).classList.remove('active');
+  document.getElementById('l'+cur).classList.remove('active');
+  if(n>cur){document.getElementById('d'+cur).classList.add('done');document.getElementById('d'+cur).textContent='✓';}
+  else{document.getElementById('d'+cur).classList.remove('done');document.getElementById('d'+cur).textContent=cur;}
+  cur=n;
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('d'+cur).classList.add('active');
+  document.getElementById('l'+cur).classList.add('active');
+  window.scrollTo(0,0);
+  if(n===6)buildPDF();
+}
+
+function addTeamRow(){
+  const b=document.getElementById('team-body');
+  const r=document.createElement('tr');
+  r.innerHTML='<td><input type="text" placeholder="Name"/></td><td><input type="text" placeholder="Role"/></td><td><input type="text" placeholder="Dept"/></td>';
+  b.appendChild(r);
+}
+
+function renderPDSATabs(){
+  const t=document.getElementById('pdsa-tabs');
+  t.innerHTML='';
+  for(let i=1;i<=pdsaTotal;i++){
+    const d=document.createElement('div');
+    d.className='pdsa-tab'+(i===pdsaCur?' active':'');
+    d.textContent='Cycle '+i;
+    d.onclick=(function(x){return function(){pdsaCur=x;renderPDSATabs();document.getElementById('pw-num').textContent=x;};})(i);
+    t.appendChild(d);
+  }
+}
+
+function addPDSACycle(){pdsaTotal++;pdsaCur=pdsaTotal;renderPDSATabs();document.getElementById('pw-num').textContent=pdsaCur;selPhase('plan');}
+function selPhase(p){curPhase=p;['plan','do','study','act'].forEach(ph=>document.getElementById('pf-'+ph).classList.toggle('active',ph===p));}
+function checkAdapt(){document.getElementById('new-cycle-btn').style.display=document.getElementById('act-dec').value==='adapt'?'block':'none';}
+function getChecked(name){return[...document.querySelectorAll('input[name="'+name+'"]:checked')].map(x=>x.value).join(', ');}
+function getRadio(name){const r=document.querySelector('input[name="'+name+'"]:checked');return r?r.value:'';}
+function v(id){const e=document.getElementById(id);return e?e.value:'';}
+
+async function aiHelp(type){
+  const pname=v('pname'),dept=v('dept'),kpis=v('kpis');
+  let sys='',prompt='',respId='';
+  if(type==='smart'){
+    sys='You are a QI coach for Makkah Health Cluster. Write a SMART objective for a healthcare PI project. Specific, Measurable, Achievable, Relevant, Time-bound. No reasons or solutions. 2-3 sentences. Respond only with the objective text.';
+    prompt='Project: '+(pname||'unknown')+', Dept: '+(dept||'unknown')+', KPI: '+(kpis||'unknown')+'. Draft: '+(v('smart')||'none')+'.';
+    respId='smart-r';
+  }else{
+    sys='You are a QI coach for Makkah Health Cluster. Write a problem statement (2-3 sentences): what is happening, where, and the impact. Respond only with the statement text.';
+    prompt='Project: '+(pname||'unknown')+', KPI: '+(kpis||'unknown')+'. Draft: '+(v('prob')||'none')+'.';
+    respId='prob-r';
+  }
+  const el=document.getElementById(respId);
+  el.innerHTML='<div class="ai-tip" style="font-style:italic">Thinking...</div>';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const txt=data.content&&data.content[0]?data.content[0].text:'Could not get suggestion.';
+    el.innerHTML='<div class="ai-resp">'+txt+'</div><button class="btn-ai" onclick="applyAI(\''+type+'\',\''+respId+'\')">Use this ↗</button>';
+  }catch(e){el.innerHTML='<div class="ai-tip">Could not reach AI.</div>';}
+}
+
+function applyAI(type,respId){
+  const txt=document.getElementById(respId).querySelector('.ai-resp').textContent;
+  document.getElementById(type==='smart'?'smart':'prob').value=txt;
+}
+
+async function pdsaAI(phase){
+  const planTest=v('plan-test'),planPred=v('plan-pred'),doData=v('do-data');
+  let sys='You are a QI expert coaching healthcare staff through PDSA cycles for Makkah Health Cluster. Be concise and practical. Max 3 sentences.';
+  let prompt='',respId=phase+'-ar';
+  if(phase==='plan') prompt='Help write a PDSA plan. Project: '+(v('pname')||'unknown')+'. Testing: '+(planTest||'not specified')+'. Suggest what to test and how to measure.';
+  else prompt='Help analyze PDSA results. Tested: '+(planTest||'unknown')+'. Predicted: '+(planPred||'unknown')+'. Data: '+(doData||'unknown')+'. What should be concluded?';
+  const el=document.getElementById(respId);
+  el.innerHTML='<div class="ai-tip" style="font-style:italic">Thinking...</div>';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const txt=data.content&&data.content[0]?data.content[0].text:'Could not get suggestion.';
+    el.innerHTML='<div class="ai-resp">'+txt+'</div>';
+  }catch(e){el.innerHTML='<div class="ai-tip">Could not reach AI.</div>';}
+}
+
+function buildGantt(){
+  const msRows=document.querySelectorAll('#ms-body tr');
+  const labels=['Project initiation','Root cause analysis','Intervention plan','First PDSA cycle','Mid-project review','Final PDSA cycle','Outcome data collection','Close-out report','Sustainability plan'];
+  const phases=['Planning','Planning','Planning','Execution','Monitoring','Monitoring','Monitoring','Closing','Sustainability'];
+  const phaseColors={'Planning':'#185FA5','Execution':'#0F6E56','Monitoring':'#854F0B','Closing':'#534AB7','Sustainability':'#1D9E75'};
+  const tasks=[];
+  msRows.forEach((row,i)=>{
+    const inputs=row.querySelectorAll('input[type="date"]');
+    const s=inputs[0]?inputs[0].value:'';
+    const e=inputs[1]?inputs[1].value:'';
+    if(s&&e)tasks.push({label:labels[i],phase:phases[i],start:new Date(s),end:new Date(e),color:phaseColors[phases[i]]||'#888'});
+  });
+  if(tasks.length===0){alert('Please enter start/end dates first.');return;}
+  const allD=tasks.flatMap(t=>[t.start,t.end]);
+  const minD=new Date(Math.min(...allD));
+  const maxD=new Date(Math.max(...allD));
+  const totalDays=Math.max((maxD-minD)/(86400000),1);
+  const W=580,rowH=26,pad={top:32,left:135,right:20,bot:20};
+  const chartW=W-pad.left-pad.right;
+  const H=pad.top+tasks.length*rowH+pad.bot;
+  let svg='<svg width="'+W+'" height="'+H+'" xmlns="http://www.w3.org/2000/svg">';
+  tasks.forEach((t,i)=>{
+    const y=pad.top+i*rowH;
+    svg+='<rect x="0" y="'+y+'" width="'+W+'" height="'+rowH+'" fill="'+(i%2===0?'#fafafa':'white')+'"/>';
+    svg+='<text x="'+(pad.left-6)+'" y="'+(y+17)+'" text-anchor="end" font-size="10" fill="#555">'+t.label.substring(0,20)+'</text>';
+    const x1=pad.left+((t.start-minD)/86400000)/totalDays*chartW;
+    const x2=pad.left+((t.end-minD)/86400000)/totalDays*chartW;
+    const bw=Math.max(x2-x1,6);
+    svg+='<rect x="'+x1+'" y="'+(y+5)+'" width="'+bw+'" height="'+(rowH-10)+'" rx="3" fill="'+t.color+'" opacity="0.85"/>';
+  });
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  for(let m=0;m<=18;m++){
+    const d=new Date(minD);d.setMonth(d.getMonth()+m);
+    const x=pad.left+((d-minD)/86400000)/totalDays*chartW;
+    if(x<=W-pad.right){
+      svg+='<line x1="'+x+'" y1="'+(pad.top-5)+'" x2="'+x+'" y2="'+(H-pad.bot)+'" stroke="#ddd" stroke-width="0.5"/>';
+      svg+='<text x="'+(x+3)+'" y="'+(pad.top-10)+'" font-size="9" fill="#999">'+months[d.getMonth()]+' '+d.getFullYear().toString().slice(2)+'</text>';
+    }
+  }
+  svg+='</svg>';
+  document.getElementById('gantt-svg').outerHTML=svg;
+  document.getElementById('gantt-card').style.display='block';
+}
+
+function buildPDF(){
+  const hospital=v('hospital')||'—',pname=v('pname')||'—',dept=v('dept')||'—',kpis=v('kpis')||'—';
+  const smart=v('smart')||'—',sdate=v('sdate')||'—',edate=v('edate')||'—';
+  const scope=getRadio('scope')||'—',period=getRadio('period')||'—';
+  const areas=getChecked('area')||'—',domains=getChecked('domain')||'—';
+  const today=new Date().toLocaleDateString('en-GB');
+  const teamRows=[...document.querySelectorAll('#team-body tr')].map(r=>{
+    const vals=[...r.querySelectorAll('input')].map(i=>i.value||'—');
+    return vals.some(v=>v!=='—')?'<tr><td>'+vals[0]+'</td><td>'+vals[1]+'</td><td>'+vals[2]+'</td></tr>':'';
+  }).join('');
+  const mLabels=['Project initiation','Root cause analysis','Intervention plan','First PDSA cycle','Mid-project review','Final PDSA cycle','Outcome data collection','Close-out report','Sustainability plan'];
+  const mPhases=['Planning','Planning','Planning','Execution','Monitoring','Monitoring','Monitoring','Closing','Sustainability'];
+  let msTable='';
+  document.querySelectorAll('#ms-body tr').forEach((row,i)=>{
+    const inputs=row.querySelectorAll('input');
+    msTable+='<tr><td>'+mPhases[i]+'</td><td>'+mLabels[i]+'</td><td>'+(inputs[0]?inputs[0].value:'—')+'</td><td>'+(inputs[1]?inputs[1].value:'—')+'</td><td>'+(inputs[2]?inputs[2].value:'—')+'</td></tr>';
+  });
+  const phaseColors={plan:'#185FA5',do:'#0F6E56',study:'#854F0B',act:'#534AB7'};
+  const phaseLabels={plan:'Plan',do:'Do',study:'Study',act:'Act'};
+  let pdsaHTML='';
+  for(let c=1;c<=pdsaTotal;c++){
+    pdsaHTML+='<div style="margin-bottom:14px"><div style="font-size:12px;font-weight:700;color:#1a3a5c;border-bottom:1px solid #eee;padding-bottom:4px;margin-bottom:8px">Cycle '+c+'</div>';
+    [{id:'plan',fields:[{id:'plan-test',label:'What was tested'},{id:'plan-pred',label:'Prediction'},{id:'plan-meas',label:'Measure of success'}]},
+     {id:'do',fields:[{id:'do-done',label:'What was done'},{id:'do-data',label:'Data collected'},{id:'do-issues',label:'Unexpected events'}]},
+     {id:'study',fields:[{id:'study-cmp',label:'Results vs prediction'},{id:'study-learn',label:'Learnings'},{id:'study-out',label:'Outcome'}]},
+     {id:'act',fields:[{id:'act-dec',label:'Decision'},{id:'act-next',label:'Next steps'}]}
+    ].forEach(phase=>{
+      const hasContent=phase.fields.some(f=>v(f.id)&&v(f.id)!=='');
+      if(!hasContent)return;
+      pdsaHTML+='<div class="pdf-phase-box"><div class="pdf-phase-hdr" style="background:'+phaseColors[phase.id]+'">'+phaseLabels[phase.id]+'</div><div class="pdf-phase-body">';
+      phase.fields.forEach(f=>{const val=v(f.id);if(val)pdsaHTML+='<div class="pdf-phase-item"><div class="pdf-phase-item-lbl">'+f.label+'</div><div class="pdf-phase-item-val">'+val+'</div></div>';});
+      pdsaHTML+='</div></div>';
+    });
+    pdsaHTML+='</div>';
+  }
+
+  document.getElementById('pdf-preview').innerHTML=`
+<div class="pdf-page">
+  <div class="pdf-hdr"><div><h1>Performance Improvement Project Application</h1><p>Makkah Health Cluster — تجمع مكة المكرمة الصحي</p></div><div style="text-align:right;font-size:10px;opacity:0.8">${today}</div></div>
+  <div class="pdf-sec">Project identification</div>
+  <div class="pdf-row"><div class="pdf-field"><div class="pdf-field-lbl">Hospital</div><div class="pdf-field-val">${hospital}</div></div><div class="pdf-field"><div class="pdf-field-lbl">Project name</div><div class="pdf-field-val">${pname}</div></div></div>
+  <div class="pdf-row"><div class="pdf-field"><div class="pdf-field-lbl">Department</div><div class="pdf-field-val">${dept}</div></div><div class="pdf-field"><div class="pdf-field-lbl">Linked KPI(s)</div><div class="pdf-field-val">${kpis}</div></div></div>
+  <div class="pdf-row"><div class="pdf-field"><div class="pdf-field-lbl">Scope</div><div class="pdf-field-val">${scope}</div></div><div class="pdf-field"><div class="pdf-field-lbl">Period</div><div class="pdf-field-val">${period}</div></div></div>
+  <div class="pdf-row"><div class="pdf-field"><div class="pdf-field-lbl">Start date</div><div class="pdf-field-val">${sdate}</div></div><div class="pdf-field"><div class="pdf-field-lbl">End date</div><div class="pdf-field-val">${edate}</div></div></div>
+  <div class="pdf-row"><div class="pdf-field"><div class="pdf-field-lbl">Area(s)</div><div class="pdf-field-val">${areas}</div></div><div class="pdf-field"><div class="pdf-field-lbl">Domain(s)</div><div class="pdf-field-val">${domains}</div></div></div>
+  <div class="pdf-sec">SMART objective</div>
+  <div class="highlight-box accent">${smart}</div>
+  <div class="pdf-sec">Project team</div>
+  <table class="pdf-tbl"><thead><tr><th>Name</th><th>Role</th><th>Department</th></tr></thead><tbody>${teamRows||'<tr><td colspan="3">—</td></tr>'}</tbody></table>
+  <div class="pdf-footer"><span>Makkah Health Cluster — PI Project</span><span>Page 1 of 4</span><span>Generated ${today}</span></div>
+</div>
+<div class="pdf-page">
+  <div class="pdf-hdr"><div><h1>QI Charter</h1><p>${pname} — ${hospital}</p></div><div style="text-align:right;font-size:10px;opacity:0.8">${today}</div></div>
+  <div class="pdf-sec">Problem statement</div><div class="highlight-box">${v('prob')||'—'}</div>
+  <div class="pdf-sec">Project description</div><div class="highlight-box">${v('pdesc')||'—'}</div>
+  <div class="pdf-row" style="margin-top:12px">
+    <div class="pdf-field"><div class="pdf-sec" style="margin-top:0">Rationale</div><div class="highlight-box">${v('rationale')||'—'}</div></div>
+    <div class="pdf-field"><div class="pdf-sec" style="margin-top:0">Expected outcomes</div><div class="highlight-box">${v('outcomes')||'—'}</div></div>
+  </div>
+  <div class="pdf-sec">QI methods</div><div style="font-size:11px;color:#222;padding:4px 0">${getChecked('method')||'—'}</div>
+  <div class="pdf-sec">Challenges & mitigation</div><div class="highlight-box">${v('challenges')||'—'}</div>
+  <div class="pdf-sec">Selection criteria</div>
+  <table class="pdf-tbl"><thead><tr><th>Category</th><th>Selected</th></tr></thead><tbody>
+    <tr><td>Core criteria</td><td>${getChecked('core')||'—'}</td></tr>
+    <tr><td>Strategic alignment</td><td>${getChecked('strat')||'—'}</td></tr>
+    <tr><td>Innovation</td><td>${getChecked('innov')||'—'}</td></tr>
+    <tr><td>Evidence-based</td><td>${getChecked('evid')||'—'}</td></tr>
+    <tr><td>Impact & scalability</td><td>${getChecked('impact')||'—'}</td></tr>
+    <tr><td>Sustainability</td><td>${getChecked('sust')||'—'}</td></tr>
+    <tr><td>Collaboration</td><td>${getChecked('collab')||'—'}</td></tr>
+  </tbody></table>
+  <div class="pdf-footer"><span>Makkah Health Cluster — PI Project</span><span>Page 2 of 4</span><span>Generated ${today}</span></div>
+</div>
+<div class="pdf-page">
+  <div class="pdf-hdr"><div><h1>Milestone Tracking</h1><p>${pname} — ${hospital}</p></div><div style="text-align:right;font-size:10px;opacity:0.8">${today}</div></div>
+  <div class="pdf-sec">Project milestones</div>
+  <table class="pdf-tbl"><thead><tr><th>Phase</th><th>Task</th><th>Start</th><th>End</th><th>Responsible</th></tr></thead><tbody>${msTable}</tbody></table>
+  <div class="pdf-footer"><span>Makkah Health Cluster — PI Project</span><span>Page 3 of 4</span><span>Generated ${today}</span></div>
+</div>
+<div class="pdf-page">
+  <div class="pdf-hdr"><div><h1>PDSA Cycles</h1><p>${pname} — ${hospital}</p></div><div style="text-align:right;font-size:10px;opacity:0.8">${today}</div></div>
+  <div class="pdf-sec">Plan–Do–Study–Act documentation</div>
+  ${pdsaHTML||'<div style="font-size:11px;color:#999;font-style:italic">No PDSA cycles completed.</div>'}
+  <div class="pdf-footer"><span>Makkah Health Cluster — PI Project</span><span>Page 4 of 4</span><span>Generated ${today}</span></div>
+</div>`;
+}
+
+renderPDSATabs();
+selPhase('plan');
+</script>
+</body>
+</html>
